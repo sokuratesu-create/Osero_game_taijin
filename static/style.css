@@ -1,0 +1,50 @@
+body{
+    font-family: sans-serif;
+    text-align: center;
+}
+
+.board{
+    display: inline-block;
+    background: #0a9b32;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.row{
+    display: flex;
+}
+
+.cell{
+    width: 50px;
+    height: 50px;
+    background: #0f7a28;
+    border: 1px solid #064a17;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    cursor: pointer;
+}
+
+form{
+    margin: 0;
+}
+
+.stone{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.black{
+    background: black;
+}
+
+.white{
+    background: white;
+}
+
+.board.game_over .cell{
+    pointer-events: none;
+    cursor: default;
+}

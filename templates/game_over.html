@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>ゲーム終了</title>
+</head>
+<body>
+    <h1>ゲーム終了</h1>
+
+    <div class="board game_over">
+        {% for y in range(8) %}
+        <div class="row">
+            {% for x in range(8) %}
+            <form action="/place" method="post">
+                <input type="hidden" name="row" value="{{ y }}">
+                <input type="hidden" name="col" value="{{ x }}">
+                <button class="cell">
+                    {% if board[y][x] == 1 %}
+                        <div class="stone white"></div>
+                    {% elif board[y][x] == 2 %}
+                        <div class="stone black"></div>
+                    {% endif %}
+                </button>
+            </form>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <p>黒：{{ black }}個　　白：{{ white }}個</p>
+
+    {% if black > white %}
+        <h2>黒の勝ち</h2>
+    {% elif white > black %}
+        <h2>白の勝ち</h2>
+    {% else %}
+        <h2>引き分け</h2>
+    {% endif %}
+
+    <a href="/reset">もう一度遊ぶ</a>
+</body>
+</html>

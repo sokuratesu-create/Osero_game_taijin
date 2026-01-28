@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>オセロ</title>
+</head>
+<body>
+    <h1>オセロ</h1>
+    <div class="board">
+        {% for y in range(8) %}
+        <div class="row">
+            {% for x in range(8) %}
+            <form action="/place" method="post">
+                <input type="hidden" name="row" value="{{ y }}">
+                <input type="hidden" name="col" value="{{ x }}">
+                <button class="cell">
+                    {% if board[y][x] == 1 %}
+                        <div class="stone white"></div>
+                    {% elif board[y][x] == 2 %}
+                        <div class="stone black"></div>
+                    {% endif %}
+                </button>
+            </form>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+    <p>手番:{{ "黒" if s_player == 2 else "白" }}</p>
+    <a href="{{ url_for("reset") }}">リセットする</a>
+</body>
+</html>
