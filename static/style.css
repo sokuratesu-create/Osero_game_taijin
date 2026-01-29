@@ -1,9 +1,19 @@
 body{
     font-family: sans-serif;
     text-align: center;
+    background-color: rgb(255, 228, 105);
+}
+
+h1, h2{
+    font-size: 50px;
+    padding: 10px;
+    width: 400px;
+    margin: 20px auto;
+    background-color: #FFFFFF;
 }
 
 .board{
+    margin-top: 50px;
     display: inline-block;
     background: #0a9b32;
     padding: 8px;
@@ -26,8 +36,12 @@ body{
     cursor: pointer;
 }
 
+.cell:hover{
+    background: #139c35;
+}
+
 form{
-    margin: 0;
+    margin: 0; /* セルの中に収めるため */
 }
 
 .stone{
