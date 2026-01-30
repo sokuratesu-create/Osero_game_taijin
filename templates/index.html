@@ -14,7 +14,10 @@
             <form action="/place" method="post">
                 <input type="hidden" name="row" value="{{ y }}">
                 <input type="hidden" name="col" value="{{ x }}">
-                <button class="cell">
+                <button class="cell
+                {% if (y, x) in valid_moves %}
+                hint
+                {% endif %}">
                     {% if board[y][x] == 1 %}
                         <div class="stone white"></div>
                     {% elif board[y][x] == 2 %}

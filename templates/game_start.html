@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>ゲームスタート画面</title>
+</head>
+<body>
+    <h1>オセロ</h1>
+        <a href="{{ url_for("index") }}">
+            <button>ゲームスタート</button>
+        </a>
+</body>
+</html>

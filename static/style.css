@@ -36,6 +36,10 @@ h1, h2{
     cursor: pointer;
 }
 
+.hint{
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7);
+}
+
 .cell:hover{
     background: #139c35;
 }
@@ -61,4 +65,9 @@ form{
 .board.game_over .cell{
     pointer-events: none;
     cursor: default;
+}
+
+button.sitake{
+    width: 200px;
+
 }

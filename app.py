@@ -26,8 +26,13 @@ dir = [
 s_player = 2
 
 @app.route("/")
+def game_start():
+    return render_template("game_start.html")
+
+@app.route("/game_playing")
 def index():
-    return render_template("index.html", board=board,s_player=s_player)
+    valid_moves = get_valid_moves(s_player)
+    return render_template("index.html", board=board,s_player=s_player, valid_moves=valid_moves)
 
 def get_flip_stone(r, c, player):
     if board[r][c] != 0:
@@ -53,6 +58,17 @@ def get_flip_stone(r, c, player):
             stones_flip.extend(stones)
 
     return stones_flip
+
+def get_valid_moves(player):
+    moves = []
+
+    for r in range(board_size):
+        for c in range(board_size):
+            stones = get_flip_stone(r, c, player)
+            if len(stones) > 0:
+                moves.append((r, c))
+
+    return moves
 
 def flip_stone(stones, player):
     for y, x in stones:
@@ -106,7 +122,7 @@ def reset():
     global board, s_player
     board = init_board()
     s_player = 2
-    return redirect(url_for("index"))
+    return redirect(url_for("game_start"))
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    app.run(host="0.0.0.0", port=10000, debug=True)
