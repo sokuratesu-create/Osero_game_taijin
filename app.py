@@ -25,19 +25,24 @@ dir = [
 #最初は黒(2)スタート
 s_player = 2
 
+#ゲームスタート画面表示
 @app.route("/")
 def game_start():
     return render_template("game_start.html")
 
+
+
+#ゲームプレイ画面表示
 @app.route("/game_playing")
 def index():
     valid_moves = get_valid_moves(s_player)
     return render_template("index.html", board=board,s_player=s_player, valid_moves=valid_moves)
 
+#ひっくりかえせる石を取得する
 def get_flip_stone(r, c, player):
     if board[r][c] != 0:
         return []
-
+    
     if player == 2:
         opponent = 1
     else:
@@ -59,6 +64,7 @@ def get_flip_stone(r, c, player):
 
     return stones_flip
 
+#おける場所のリスト取得
 def get_valid_moves(player):
     moves = []
 
@@ -70,10 +76,12 @@ def get_valid_moves(player):
 
     return moves
 
+#石をひっくりかえすところ
 def flip_stone(stones, player):
     for y, x in stones:
         board[y][x] = player
 
+#手番交代
 def switch():
     global s_player
     if s_player == 1:
@@ -81,6 +89,7 @@ def switch():
     else:
         s_player = 1
 
+#置いた石とひっくりかえせる石を処理する
 @app.route("/place", methods=["POST"])
 def place():
     global s_player
@@ -97,11 +106,13 @@ def place():
         if not has_valid_move(s_player):
             switch()
 
+            #どちらもパス判定になったらゲーム終了
             if not has_valid_move(s_player):
                 return redirect(url_for("game_over"))
 
     return redirect(url_for("index"))
 
+#手があるかどうか判定
 def has_valid_move(player):
     for r in range(board_size):
         for c in range(board_size):
@@ -110,13 +121,16 @@ def has_valid_move(player):
                 return True
     return False
 
+#ゲーム終了画面表示
 @app.route("/game_over")
 def game_over():
+    #黒白の石の数を数える
     black = sum(row.count(2) for row in board)
     white = sum(row.count(1) for row in board)
 
     return render_template("game_over.html", black=black, white=white, board=board)
 
+#リセット処理をする
 @app.route("/reset")
 def reset():
     global board, s_player
