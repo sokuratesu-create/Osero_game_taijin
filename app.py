@@ -31,7 +31,6 @@ def game_start():
     return render_template("game_start.html")
 
 
-
 #ゲームプレイ画面表示
 @app.route("/game_playing")
 def index():
