@@ -1,4 +1,5 @@
 from flask import Flask, render_template, redirect, request, url_for
+from cpu import cpu_get_move
 app = Flask(__name__)
 
 #8×8の盤面
@@ -25,17 +26,40 @@ dir = [
 #最初は黒(2)スタート
 s_player = 2
 
+#ゲームモード
+game_mode = "pvp"
+cpu_player = 2
+
+
 #ゲームスタート画面表示
 @app.route("/")
 def game_start():
     return render_template("game_start.html")
 
+#対人・CPU対戦選択画面表示
+@app.route("/select")
+def select():
+    return render_template("select.html")
+
+#モード選択処理
+@app.route("/select_mode", methods=["POST"])
+def select_mode():
+    global game_mode, cpu_player
+    mode = request.form.get("mode")
+
+    if mode == "pvp":
+        game_mode = "pvp"
+    elif mode == "cpu":
+        game_mode = "cpu"
+        cpu_player = 2
+
+    return redirect(url_for("index"))
 
 #ゲームプレイ画面表示
 @app.route("/game_playing")
 def index():
     valid_moves = get_valid_moves(s_player)
-    return render_template("index.html", board=board,s_player=s_player, valid_moves=valid_moves)
+    return render_template("index.html", board=board,s_player=s_player, valid_moves=valid_moves, game_mode=game_mode)
 
 #ひっくりかえせる石を取得する
 def get_flip_stone(r, c, player):
@@ -91,7 +115,7 @@ def switch():
 #置いた石とひっくりかえせる石を処理する
 @app.route("/place", methods=["POST"])
 def place():
-    global s_player
+    global board, s_player
     r = int(request.form["row"])
     c = int(request.form["col"])
 
@@ -108,6 +132,20 @@ def place():
             #どちらもパス判定になったらゲーム終了
             if not has_valid_move(s_player):
                 return redirect(url_for("game_over"))
+            
+    if game_mode == "cpu" and s_player == cpu_player:
+        cpu_move = cpu_get_move(board, s_player)
+        if cpu_move:
+            r, c = cpu_move
+            cpu_stones = get_flip_stone(r, c, s_player)
+            if len(cpu_stones) > 0:
+                board[r][c] = s_player
+                flip_stone(stones, s_player)
+                switch()
+                if not has_valid_move(s_player):
+                    switch()
+                    if not has_valid_move(s_player):
+                        return redirect(url_for("game_over"))
 
     return redirect(url_for("index"))
 

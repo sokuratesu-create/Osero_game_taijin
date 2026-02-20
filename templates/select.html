@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>セレクト画面</title>
+</head>
+<body>
+    <h1>モード選択</h1>
+    <div class="select-mode">
+        <form action="/select_mode" method="post">
+            <button type="submit" class="select-button" name="mode" value="pvp">対人戦</button>
+            <button type="submit" class="select-button" name="mode" value="cpu">CPU対戦</button>
+        </form>
+    </div>
+</body>
+</html>
