@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, request, url_for
-from cpu import cpu_get_move
+import cpu
+import time
 app = Flask(__name__)
 
 #8×8の盤面
@@ -27,8 +28,8 @@ dir = [
 s_player = 2
 
 #ゲームモード
-game_mode = "pvp"
-cpu_player = 2
+game_mode = None
+cpu_player = None
 
 
 #ゲームスタート画面表示
@@ -51,18 +52,21 @@ def select_mode():
         game_mode = "pvp"
     elif mode == "cpu":
         game_mode = "cpu"
-        cpu_player = 2
-
+        cpu_player = 1
+    
     return redirect(url_for("index"))
 
 #ゲームプレイ画面表示
 @app.route("/game_playing")
 def index():
     valid_moves = get_valid_moves(s_player)
-    return render_template("index.html", board=board,s_player=s_player, valid_moves=valid_moves, game_mode=game_mode)
+    return render_template("index.html", board=board,s_player=s_player, valid_moves=valid_moves, game_mode=game_mode, cpu_player=cpu_player)
 
 #ひっくりかえせる石を取得する
-def get_flip_stone(r, c, player):
+def get_flip_stone(r, c, player, board=None):
+    if board is None:
+        board = globals()["board"]
+    
     if board[r][c] != 0:
         return []
     
@@ -112,10 +116,10 @@ def switch():
     else:
         s_player = 1
 
-#置いた石とひっくりかえせる石を処理する
+#置いた石とひっくりかえせる石を処理する（人の処理用）
 @app.route("/place", methods=["POST"])
 def place():
-    global board, s_player
+    global board, s_player, game_mode
     r = int(request.form["row"])
     c = int(request.form["col"])
 
@@ -133,21 +137,37 @@ def place():
             if not has_valid_move(s_player):
                 return redirect(url_for("game_over"))
             
+    return redirect(url_for("index"))
+
+#置いた石とひっくりかえせる石を処理する（CPUの処理用）
+@app.route("/cpu_move", methods=["POST"])
+def cpu_move_handler():
+    global board, s_player, game_mode, cpu_player
+    
     if game_mode == "cpu" and s_player == cpu_player:
-        cpu_move = cpu_get_move(board, s_player)
+        cpu_move = cpu.cpu_get_move(board, s_player)
+        
         if cpu_move:
-            r, c = cpu_move
-            cpu_stones = get_flip_stone(r, c, s_player)
+            cr, cc = cpu_move
+            cpu_stones = get_flip_stone(cr, cc, s_player, board)
+            
             if len(cpu_stones) > 0:
-                board[r][c] = s_player
-                flip_stone(stones, s_player)
+                board[cr][cc] = s_player
+                flip_stone(cpu_stones, s_player)
                 switch()
+                
                 if not has_valid_move(s_player):
                     switch()
                     if not has_valid_move(s_player):
-                        return redirect(url_for("game_over"))
+                        return {"status": "game_over"}
+        
+        if not has_valid_move(s_player):
+            switch()
+            if not has_valid_move(s_player):
+                return {"status": "game_over"}
+    
+    return {"status": "ok"}
 
-    return redirect(url_for("index"))
 
 #手があるかどうか判定
 def has_valid_move(player):
